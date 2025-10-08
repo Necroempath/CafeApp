@@ -7,16 +7,13 @@ public class Order
     public DateTime CreatedAt { get; set; }
     
     public bool IsCompleted { get; set; }
-    
-    public int TableNumber { get; set; }
-
     public int PaymentId { get; set; }
     
     public int EmployeeId { get; set; }
 
     public int CustomerId { get; set; }
     
-    public Employee CreatedBy { get; set; }
+    public Employee ServicedBy { get; set; }
     
     public Customer OrderedBy { get; set; }
     

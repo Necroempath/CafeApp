@@ -14,7 +14,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 
         var hireDate = builder.Property(x => x.HireDate);
         hireDate.IsRequired();
-        builder.ToTable(t => t.HasCheckConstraint("CK_Employee_HireDate", "[HireDate] < GETUTCDATE()"));
+        builder.ToTable(t => t.HasCheckConstraint("CK_Employee_HireDate", "[HireDate] < CAST(GETUTCDATE() AS date)"));
         
         var salary = builder.Property(x => x.Salary);
         salary.IsRequired();

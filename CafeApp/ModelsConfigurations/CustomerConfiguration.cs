@@ -11,5 +11,6 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.Name).IsRequired().HasMaxLength(30);
+        builder.Property(x => x.TableId).IsRequired(false);
     }
 }

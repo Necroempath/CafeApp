@@ -16,9 +16,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(x => x.IsCompleted).IsRequired();
 
-        builder.Property(x => x.TableNumber).IsRequired();
-
-        builder.HasOne(o => o.CreatedBy).WithMany(e => e.Orders).HasForeignKey(o => o.EmployeeId);
+        builder.HasOne(o => o.ServicedBy).WithMany(e => e.Orders).HasForeignKey(o => o.EmployeeId);
         
         builder.HasOne(o => o.OrderedBy).WithMany(c => c.Orders).HasForeignKey(o => o.CustomerId);
         

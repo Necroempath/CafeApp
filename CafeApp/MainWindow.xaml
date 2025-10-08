@@ -3,10 +3,119 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CafeApp"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".1*" />
+            <RowDefinition Height=".1*" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
 
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <TextBlock Text="Customer:" VerticalAlignment="Center"></TextBlock>
+            <ComboBox Height="25" Width="150" Margin="49, 0, 0, 0" 
+                      ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                      DisplayMemberPath="Name">
+            </ComboBox>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+            <TextBlock Text="Product category:" VerticalAlignment="Center"></TextBlock>
+            <ComboBox Height="25" Width="150" Margin="10, 0, 0, 0"
+                      ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                      DisplayMemberPath="Name">
+            </ComboBox>
+        </StackPanel>
+
+        <GroupBox Grid.Row="2" Grid.Column="0" Header="Products">
+            <DataGrid ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}"
+                      AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                      HeadersVisibility="Column" SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Product" Binding="{Binding Name}" Width=".7*" />
+                    <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width=".3*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <Grid Grid.Row="0" Grid.Column="1" RowSpan="3" Margin="5, 0, 5, 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".075*" />
+                <RowDefinition Height=".075*" />
+                <RowDefinition Height=".1*" />
+                <RowDefinition Height=".1*" />
+                <RowDefinition Height=".1*" />
+                <RowDefinition Height=".1*" />
+                <RowDefinition Height=".8*" />
+
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Product:" VerticalAlignment="Center"></TextBlock>
+
+            <Border Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Padding="2" Margin="1"
+                    CornerRadius="3">
+                <TextBlock Grid.Row="0" Text="{Binding SelectedProduct.Name}" VerticalAlignment="Center"
+                           HorizontalAlignment="Center">
+                </TextBlock>
+            </Border>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Amount:" VerticalAlignment="Center"></TextBlock>
+
+            <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Padding="2" Margin="1"
+                    CornerRadius="3">
+                <TextBlock Text="{Binding ProductAmount}" VerticalAlignment="Center" FontWeight="Bold"></TextBlock>
+            </Border>
+            <Button Grid.Row="2" Grid.Column="0" Content="Add one" Height="25" Margin="0, 0, 5, 0"
+                    Command="{Binding IncrementAmountCommand}">
+            </Button>
+            <Button Grid.Row="2" Grid.Column="1" Content="Remove one" Height="25" Margin="5, 0, 0, 0"
+                    Command="{Binding DecrementAmountCommand}">
+            </Button>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Select table:" VerticalAlignment="Center"></TextBlock>
+            <ComboBox Grid.Row="3" Grid.Column="1" Margin="5, 5, 0, 5" ItemsSource="{Binding VacantTables}"
+                      SelectedItem="{Binding SelectedVacantTable, Mode=TwoWay}"></ComboBox>
+
+            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="To Order List" Height="25"></Button>
+
+            <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Horizontal">
+                <TextBlock Text="Total price:" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Text="" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
+            </StackPanel>
+            
+            <Button Grid.Row="5" Grid.Column="1" Content="Make Order" Height="25"></Button>
+            
+            <GroupBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Header="Ordered products">
+                <DataGrid></DataGrid>
+            </GroupBox>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".5*" />
+                <RowDefinition Height=".1*" />
+                <RowDefinition Height=".5*" />
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0" Header="In Progress">
+                <DataGrid></DataGrid>
+            </GroupBox>
+            <GroupBox Grid.Row="2" Header="Completed">
+                <DataGrid></DataGrid>
+            </GroupBox>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,0,0,5">
+                <TextBlock Text="Payment:" VerticalAlignment="Center"></TextBlock>
+                <ListBox Width="100" Height="25" Margin="10,0,10,0"></ListBox>
+                <Button Width="80" Height="25" Content="Complete"></Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

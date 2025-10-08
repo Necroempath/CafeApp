@@ -1,4 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using CafeApp.Commands;
+using CafeApp.Data;
 using CafeApp.Models;
 using CafeApp.ViewModels.Abstractions;
 
@@ -6,10 +9,13 @@ namespace CafeApp.ViewModels;
 
 public class MainViewModel : BaseViewModel
 {
+    private AppDbContext _dbContext;
     private Category? _selectedCategory;
     private Product? _selectedProduct;
     private ObservableCollection<Product> _products = new();
     private int _productAmount;
+    private ObservableCollection<int>  _vacantTables = new();
+    private int _selectedVacantTable;
     public ObservableCollection<Category> Categories { get; set; } = new();
 
     public Category? SelectedCategory
@@ -18,11 +24,7 @@ public class MainViewModel : BaseViewModel
         set
         {
             SetField<Category>(ref _selectedCategory, value);
-            Products.Clear();
-            foreach (var product in _selectedCategory.Products)
-            {
-                Products.Add(product);
-            }
+            LoadProducts(value.Id);
         }
     }
 
@@ -35,82 +37,72 @@ public class MainViewModel : BaseViewModel
     public Product? SelectedProduct
     {
         get => _selectedProduct;
-        set => SetField<Product>(ref _selectedProduct, value);
+        set
+        {
+            SetField<Product>(ref _selectedProduct, value); 
+            ProductAmount = _selectedProduct == null ? 0 : 1;
+        }
     }
 
     public int ProductAmount
     {
         get => _productAmount;
-        set =>  SetField(ref _productAmount, value);
+        set
+        {
+            
+            SetField(ref _productAmount, value);  
+        } 
     }
 
-    public MainViewModel()
+    public List<int> Tables { get; set; } = [13, 27, 81, 69, 47, 51, 39, 78, 90, 65, 43, 11, 19, 21, 50, 54, 89, 66, 35, 72];
+
+    public ObservableCollection<int> VacantTables
     {
+        get => _vacantTables;
+        set => _vacantTables = value;
+    }
+
+    public int SelectedVacantTable
+    {
+        get => _selectedVacantTable;
+        set => _selectedVacantTable = value;
+    }
+
+    public ICommand IncrementAmountCommand { get; set; }
+    public ICommand DecrementAmountCommand { get; set; }
+    public MainViewModel(AppDbContext dbContext)
+    {
+        IncrementAmountCommand = new RelayCommand(_ => ProductAmount++, _ => SelectedProduct != null );
+        DecrementAmountCommand = new RelayCommand(_ => ProductAmount--, _ => SelectedProduct != null && ProductAmount > 1 );
+        _dbContext = dbContext;
+        
         LoadCategories();
-    }
-
-    void LoadCategories()
-    {
-        SetCategories();
+     
         SelectedCategory = Categories[0];
     }
-    void SetCategories()
+
+    private void LoadProducts(int categoryId)
     {
-        Categories.Add(new Category
-        {
-            Name = "Drinks",
-            Products = new ObservableCollection<Product>
-            {
-                new Product { Name = "Coffee", Price = 3 },
-                new Product { Name = "Tea", Price = 2.5m },
-                new Product { Name = "Juice", Price = 4 },
-                new Product { Name = "Soda", Price = 2 },
-                new Product { Name = "Water", Price = 1 },
-                new Product { Name = "Smoothie", Price = 5 },
-            }
-        });
+        var products = _dbContext.Products.Where(p => p.CategoryId == categoryId).ToList();
+        
+        Products.Clear();
 
-        Categories.Add(new Category
+        foreach (var product in products)
         {
-            Name = "Desserts",
-            Products = new ObservableCollection<Product>
-            {
-                new Product { Name = "Cake", Price = 4 },
-                new Product { Name = "Ice Cream", Price = 3 },
-                new Product { Name = "Pie", Price = 3.5m },
-                new Product { Name = "Brownie", Price = 3 },
-                new Product { Name = "Muffin", Price = 2.5m },
-                new Product { Name = "Pudding", Price = 3 },
-            }
-        });
+            Products.Add(product);
+        }
+    }
 
-        Categories.Add(new Category
+    private void LoadCategories()
+    {
+        var categories = _dbContext.Categories.ToList();
+        
+        Categories.Clear();
+        
+        foreach (var category in categories)
         {
-            Name = "Main Dishes",
-            Products = new ObservableCollection<Product>
-            {
-                new Product { Name = "Pizza", Price = 8 },
-                new Product { Name = "Burger", Price = 6 },
-                new Product { Name = "Pasta", Price = 7 },
-                new Product { Name = "Salad", Price = 5 },
-                new Product { Name = "Steak", Price = 12 },
-                new Product { Name = "Sandwich", Price = 5.5m },
-            }
-        });
-
-        Categories.Add(new Category
-        {
-            Name = "Snacks",
-            Products = new ObservableCollection<Product>
-            {
-                new Product { Name = "Fries", Price = 2.5m },
-                new Product { Name = "Nachos", Price = 3 },
-                new Product { Name = "Onion Rings", Price = 3 },
-                new Product { Name = "Popcorn", Price = 1.5m },
-                new Product { Name = "Nuggets", Price = 4 },
-                new Product { Name = "Pretzel", Price = 2 },
-            }
-        });
+            Categories.Add(category);
+        }
     }
 
 }

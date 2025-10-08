@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CafeApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250809133129_First")]
-    partial class First
+    [Migration("20251008072827_Second")]
+    partial class Second
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,7 @@ namespace CafeApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("CafeApp.Models.Customer", b =>
@@ -58,7 +58,7 @@ namespace CafeApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer");
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("CafeApp.Models.Employee", b =>
@@ -69,8 +69,8 @@ namespace CafeApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("HireDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("HireDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -85,9 +85,9 @@ namespace CafeApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employee", t =>
+                    b.ToTable("Employees", t =>
                         {
-                            t.HasCheckConstraint("CK_Employee_HireDate", "[HireDate] < GETUTCDATE()");
+                            t.HasCheckConstraint("CK_Employee_HireDate", "[HireDate] < CAST(GETUTCDATE() AS date)");
 
                             t.HasCheckConstraint("CK_Employee_Premium", "[Premium] > 0");
 
@@ -127,7 +127,7 @@ namespace CafeApp.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Order", t =>
+                    b.ToTable("Orders", t =>
                         {
                             t.HasCheckConstraint("CK_Order_CreatedAt", "[CreatedAt] < GETUTCDATE()");
                         });
@@ -156,7 +156,7 @@ namespace CafeApp.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItem", t =>
+                    b.ToTable("OrderItems", t =>
                         {
                             t.HasCheckConstraint("CK_OrderItem_Quantity_Positive", "[Quantity] > 0");
                         });
@@ -188,7 +188,7 @@ namespace CafeApp.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("Payment", t =>
+                    b.ToTable("Payments", t =>
                         {
                             t.HasCheckConstraint("CK_Payment_Amount_Positive", "[Amount] > 0");
 
@@ -219,7 +219,7 @@ namespace CafeApp.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Product", t =>
+                    b.ToTable("Products", t =>
                         {
                             t.HasCheckConstraint("CK_Product_Price_Positive", "[Price] > 0");
                         });
@@ -233,15 +233,15 @@ namespace CafeApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CafeApp.Models.Employee", "CreatedBy")
+                    b.HasOne("CafeApp.Models.Employee", "ServicedBy")
                         .WithMany("Orders")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedBy");
-
                     b.Navigation("OrderedBy");
+
+                    b.Navigation("ServicedBy");
                 });
 
             modelBuilder.Entity("CafeApp.Models.OrderItem", b =>

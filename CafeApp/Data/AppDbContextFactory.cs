@@ -9,8 +9,9 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        var options = AppDbContextOptionsBuilder.GetOptions();
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseSqlServer(JsonConfigurator.GetBuilder().GetConnectionString("Default"));
         
-        return new AppDbContext(options);
+        return new AppDbContext(options.Options);
     }
 }
