@@ -4,6 +4,7 @@ using CafeApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CafeApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251009102923_Next")]
+    partial class Next
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,9 +93,7 @@ namespace CafeApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TableId")
-                        .IsUnique()
-                        .HasFilter("[TableId] IS NOT NULL");
+                    b.HasIndex("TableId");
 
                     b.ToTable("Customers");
 
@@ -865,8 +866,8 @@ namespace CafeApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Number")
                         .HasColumnType("int");
@@ -934,8 +935,8 @@ namespace CafeApp.Migrations
             modelBuilder.Entity("CafeApp.Models.Customer", b =>
                 {
                     b.HasOne("CafeApp.Models.Table", "Table")
-                        .WithOne("Customer")
-                        .HasForeignKey("CafeApp.Models.Customer", "TableId");
+                        .WithMany()
+                        .HasForeignKey("TableId");
 
                     b.Navigation("Table");
                 });
@@ -1024,8 +1025,6 @@ namespace CafeApp.Migrations
 
             modelBuilder.Entity("CafeApp.Models.Table", b =>
                 {
-                    b.Navigation("Customer");
-
                     b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618

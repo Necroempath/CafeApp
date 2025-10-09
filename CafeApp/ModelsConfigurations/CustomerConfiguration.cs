@@ -12,5 +12,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         
         builder.Property(x => x.Name).IsRequired().HasMaxLength(30);
         builder.Property(x => x.TableId).IsRequired(false);
+        
+        builder.HasOne(c => c.Table).WithOne(t => t.Customer).HasForeignKey<Customer>(c => c.TableId);
     }
 }

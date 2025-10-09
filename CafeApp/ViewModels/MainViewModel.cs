@@ -60,7 +60,6 @@ public class MainViewModel : BaseViewModel
         set => SetField(ref _selectedTable, value);
     }
     public ObservableCollection<OrderItem> OrderItems { get; set; } = new();
-    
     public OrderItem? SelectedOrderItem
     {
         get => _selectedOrderItem;
@@ -79,7 +78,6 @@ public class MainViewModel : BaseViewModel
     }
 
     public List<string> PaymentMethods { get; set; } = ["Cash", "Credit Card", "Mobile payment", "QR payment"];
-    
     public string SelectedPaymentMethod { get; set; } = "Cash";
     
     public ICommand IncrementAmountCommand { get; set; }
@@ -97,6 +95,7 @@ public class MainViewModel : BaseViewModel
         ToOrderListCommand = new RelayCommand(_ => OrderItems.Add(new(){ Quantity = ProductAmount, Product = SelectedProduct! }),  _ => SelectedProduct != null);
         CreateOrderCommand = new RelayCommand(_ => UncompletedOrders.Add(CreateOrder()), _ => OrderItems.Count > 0);
         CompleteOrderCommand = new RelayCommand(_ => CompleteOrder(), _ => SelectedUncompletedOrder != null);
+        
         LoadCustomers();
         LoadCategories();
         LoadTables();
@@ -113,6 +112,7 @@ public class MainViewModel : BaseViewModel
         UncompletedOrders.CollectionChanged += (s, e) =>
         {
             _dbContext.Tables.Update(SelectedTable);
+            _dbContext.Customers.Update(SelectedTable.Customer!);
             _dbContext.SaveChanges();
             LoadTables();
             SelectedTable = Tables[0];
@@ -154,7 +154,7 @@ public class MainViewModel : BaseViewModel
     }
     private void LoadTables()
     {
-        var tables = _dbContext.Tables.Where(t => t.CustomerName == null);
+        var tables = _dbContext.Tables.Where(t => t.Customer == null);
         
         Tables.Clear();
 
@@ -188,8 +188,9 @@ public class MainViewModel : BaseViewModel
         
         order.CreatedAt = DateTime.Now;
         order.IsCompleted = false;
-        order.OrderedBy.CustomerName = _customers[new Random().Next(0, _customers.Count)].Name;
         order.OrderedBy = SelectedTable;
+        order.OrderedBy.Customer = _customers.First(c => c.Table == null);
+        
         order.ServicedBy = _employees[new Random().Next(0, _employees.Count)];
         order.Cost = TotalPrice;
         
