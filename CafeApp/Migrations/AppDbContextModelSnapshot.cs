@@ -38,6 +38,38 @@ namespace CafeApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Coffee"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Desserts"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Main Dishes"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Drinks"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Snacks"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Salads"
+                        });
                 });
 
             modelBuilder.Entity("CafeApp.Models.Customer", b =>
@@ -63,6 +95,58 @@ namespace CafeApp.Migrations
                         .HasFilter("[TableId] IS NOT NULL");
 
                     b.ToTable("Customers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Aga Mammadov"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Aynur Huseynova"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Rashad Aliyev"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Nigar Gasimova"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Elvin Azimov"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Sevil Mammadli"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Kamran Ibrahimov"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Farid Ismayilov"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Lala Taghizade"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Tural Safarov"
+                        });
                 });
 
             modelBuilder.Entity("CafeApp.Models.Employee", b =>
@@ -97,6 +181,72 @@ namespace CafeApp.Migrations
 
                             t.HasCheckConstraint("CK_Employee_Salary", "[Salary] > 0");
                         });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            HireDate = new DateOnly(2021, 3, 15),
+                            Name = "Alice Carter",
+                            Premium = 200m,
+                            Salary = 2200m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            HireDate = new DateOnly(2022, 6, 5),
+                            Name = "Brian Smith",
+                            Premium = 150m,
+                            Salary = 2100m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            HireDate = new DateOnly(2020, 11, 2),
+                            Name = "Catherine Jones",
+                            Premium = 300m,
+                            Salary = 2500m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            HireDate = new DateOnly(2019, 8, 23),
+                            Name = "Daniel Johnson",
+                            Premium = 350m,
+                            Salary = 2600m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            HireDate = new DateOnly(2023, 2, 1),
+                            Name = "Emma Brown",
+                            Premium = 120m,
+                            Salary = 2000m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            HireDate = new DateOnly(2021, 9, 17),
+                            Name = "Frank Wilson",
+                            Premium = 180m,
+                            Salary = 2300m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            HireDate = new DateOnly(2022, 4, 12),
+                            Name = "Grace Taylor",
+                            Premium = 140m,
+                            Salary = 2150m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            HireDate = new DateOnly(2020, 7, 8),
+                            Name = "Henry Miller",
+                            Premium = 400m,
+                            Salary = 2700m
+                        });
                 });
 
             modelBuilder.Entity("CafeApp.Models.Order", b =>
@@ -106,6 +256,12 @@ namespace CafeApp.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -119,7 +275,7 @@ namespace CafeApp.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PaymentId")
+                    b.Property<int?>("PaymentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -130,7 +286,11 @@ namespace CafeApp.Migrations
 
                     b.ToTable("Orders", t =>
                         {
+                            t.HasCheckConstraint("CK_Order_CompletedAt", "[CompletedAt] < GETUTCDATE() AND [CompletedAt] > [CreatedAt]");
+
                             t.HasCheckConstraint("CK_Order_CreatedAt", "[CreatedAt] < GETUTCDATE()");
+
+                            t.HasCheckConstraint("CK_Product_Cost_Positive", "[Cost] > 0");
                         });
                 });
 
@@ -224,6 +384,477 @@ namespace CafeApp.Migrations
                         {
                             t.HasCheckConstraint("CK_Product_Price_Positive", "[Price] > 0");
                         });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Name = "Espresso",
+                            Price = 3.00m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            Name = "Americano",
+                            Price = 3.50m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Name = "Cappuccino",
+                            Price = 4.00m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 1,
+                            Name = "Latte",
+                            Price = 4.50m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 1,
+                            Name = "Mocha",
+                            Price = 4.80m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 1,
+                            Name = "Flat White",
+                            Price = 4.20m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 1,
+                            Name = "Irish Coffee",
+                            Price = 5.50m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 1,
+                            Name = "Macchiato",
+                            Price = 3.80m
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoryId = 1,
+                            Name = "Turkish Coffee",
+                            Price = 3.20m
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CategoryId = 1,
+                            Name = "Iced Latte",
+                            Price = 4.60m
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CategoryId = 1,
+                            Name = "Affogato",
+                            Price = 5.00m
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CategoryId = 2,
+                            Name = "Cheesecake",
+                            Price = 5.00m
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CategoryId = 2,
+                            Name = "Tiramisu",
+                            Price = 5.50m
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CategoryId = 2,
+                            Name = "Chocolate Cake",
+                            Price = 4.80m
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CategoryId = 2,
+                            Name = "Apple Pie",
+                            Price = 4.00m
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CategoryId = 2,
+                            Name = "Croissant",
+                            Price = 2.50m
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CategoryId = 2,
+                            Name = "Cinnamon Roll",
+                            Price = 3.00m
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CategoryId = 2,
+                            Name = "Brownie",
+                            Price = 3.50m
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CategoryId = 2,
+                            Name = "Muffin",
+                            Price = 2.80m
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CategoryId = 2,
+                            Name = "Eclair",
+                            Price = 3.20m
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CategoryId = 2,
+                            Name = "Fruit Tart",
+                            Price = 4.70m
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CategoryId = 2,
+                            Name = "Lemon Cake",
+                            Price = 4.30m
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CategoryId = 2,
+                            Name = "Macarons",
+                            Price = 5.50m
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CategoryId = 3,
+                            Name = "Beef Burger",
+                            Price = 9.50m
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CategoryId = 3,
+                            Name = "Chicken Sandwich",
+                            Price = 8.00m
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CategoryId = 3,
+                            Name = "Club Sandwich",
+                            Price = 8.50m
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CategoryId = 3,
+                            Name = "Grilled Salmon",
+                            Price = 12.00m
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CategoryId = 3,
+                            Name = "Spaghetti Carbonara",
+                            Price = 10.50m
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CategoryId = 3,
+                            Name = "Caesar Chicken",
+                            Price = 9.00m
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CategoryId = 3,
+                            Name = "Steak & Fries",
+                            Price = 13.50m
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CategoryId = 3,
+                            Name = "Fish & Chips",
+                            Price = 10.00m
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CategoryId = 3,
+                            Name = "Grilled Chicken",
+                            Price = 9.20m
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CategoryId = 3,
+                            Name = "Pasta Alfredo",
+                            Price = 9.80m
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CategoryId = 3,
+                            Name = "Beef Stroganoff",
+                            Price = 11.00m
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CategoryId = 3,
+                            Name = "Lasagna",
+                            Price = 10.80m
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CategoryId = 4,
+                            Name = "Cola",
+                            Price = 2.00m
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CategoryId = 4,
+                            Name = "Sprite",
+                            Price = 2.00m
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CategoryId = 4,
+                            Name = "Orange Juice",
+                            Price = 3.00m
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CategoryId = 4,
+                            Name = "Lemonade",
+                            Price = 3.00m
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CategoryId = 4,
+                            Name = "Mineral Water",
+                            Price = 1.50m
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CategoryId = 4,
+                            Name = "Iced Tea",
+                            Price = 2.80m
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CategoryId = 4,
+                            Name = "Milkshake",
+                            Price = 4.00m
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CategoryId = 4,
+                            Name = "Energy Drink",
+                            Price = 3.50m
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CategoryId = 4,
+                            Name = "Hot Chocolate",
+                            Price = 3.80m
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CategoryId = 4,
+                            Name = "Smoothie",
+                            Price = 4.50m
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CategoryId = 4,
+                            Name = "Cold Brew",
+                            Price = 4.20m
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CategoryId = 5,
+                            Name = "French Fries",
+                            Price = 3.00m
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CategoryId = 5,
+                            Name = "Onion Rings",
+                            Price = 3.50m
+                        },
+                        new
+                        {
+                            Id = 49,
+                            CategoryId = 5,
+                            Name = "Mozzarella Sticks",
+                            Price = 4.20m
+                        },
+                        new
+                        {
+                            Id = 50,
+                            CategoryId = 5,
+                            Name = "Chicken Nuggets",
+                            Price = 4.50m
+                        },
+                        new
+                        {
+                            Id = 51,
+                            CategoryId = 5,
+                            Name = "Garlic Bread",
+                            Price = 2.80m
+                        },
+                        new
+                        {
+                            Id = 52,
+                            CategoryId = 5,
+                            Name = "Nachos",
+                            Price = 3.80m
+                        },
+                        new
+                        {
+                            Id = 53,
+                            CategoryId = 5,
+                            Name = "Popcorn",
+                            Price = 2.50m
+                        },
+                        new
+                        {
+                            Id = 54,
+                            CategoryId = 5,
+                            Name = "Mini Sausages",
+                            Price = 4.00m
+                        },
+                        new
+                        {
+                            Id = 55,
+                            CategoryId = 5,
+                            Name = "Cheese Balls",
+                            Price = 3.70m
+                        },
+                        new
+                        {
+                            Id = 56,
+                            CategoryId = 5,
+                            Name = "Spring Rolls",
+                            Price = 4.30m
+                        },
+                        new
+                        {
+                            Id = 57,
+                            CategoryId = 6,
+                            Name = "Caesar Salad",
+                            Price = 6.50m
+                        },
+                        new
+                        {
+                            Id = 58,
+                            CategoryId = 6,
+                            Name = "Greek Salad",
+                            Price = 6.00m
+                        },
+                        new
+                        {
+                            Id = 59,
+                            CategoryId = 6,
+                            Name = "Tuna Salad",
+                            Price = 6.80m
+                        },
+                        new
+                        {
+                            Id = 60,
+                            CategoryId = 6,
+                            Name = "Chicken Salad",
+                            Price = 6.50m
+                        },
+                        new
+                        {
+                            Id = 61,
+                            CategoryId = 6,
+                            Name = "Veggie Salad",
+                            Price = 5.50m
+                        },
+                        new
+                        {
+                            Id = 62,
+                            CategoryId = 6,
+                            Name = "Pasta Salad",
+                            Price = 6.20m
+                        },
+                        new
+                        {
+                            Id = 63,
+                            CategoryId = 6,
+                            Name = "Caprese Salad",
+                            Price = 6.70m
+                        },
+                        new
+                        {
+                            Id = 64,
+                            CategoryId = 6,
+                            Name = "Quinoa Salad",
+                            Price = 6.90m
+                        },
+                        new
+                        {
+                            Id = 65,
+                            CategoryId = 6,
+                            Name = "Couscous Salad",
+                            Price = 6.80m
+                        },
+                        new
+                        {
+                            Id = 66,
+                            CategoryId = 6,
+                            Name = "Avocado Salad",
+                            Price = 7.00m
+                        },
+                        new
+                        {
+                            Id = 67,
+                            CategoryId = 6,
+                            Name = "Asian Chicken Salad",
+                            Price = 7.50m
+                        });
                 });
 
             modelBuilder.Entity("CafeApp.Models.Table", b =>
@@ -242,9 +873,61 @@ namespace CafeApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Table", t =>
+                    b.ToTable("Tables", t =>
                         {
                             t.HasCheckConstraint("CK_Table_Number_Positive", "[Number] > 0");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Number = 10
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Number = 12
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Number = 15
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Number = 18
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Number = 22
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Number = 35
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Number = 41
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Number = 56
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Number = 73
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Number = 88
                         });
                 });
 
@@ -336,8 +1019,7 @@ namespace CafeApp.Migrations
                 {
                     b.Navigation("OrderItems");
 
-                    b.Navigation("Payment")
-                        .IsRequired();
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("CafeApp.Models.Product", b =>

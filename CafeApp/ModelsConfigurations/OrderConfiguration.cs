@@ -9,17 +9,27 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
     public void Configure(EntityTypeBuilder<Order> builder)
     {
         builder.HasKey(x => x.Id);
-
-        var createdAt = builder.Property(x => x.CreatedAt);
-        createdAt.IsRequired();
-        builder.ToTable(t => t.HasCheckConstraint("CK_Order_CreatedAt", "[CreatedAt] < GETUTCDATE()"));
-
+        
+        builder.ToTable((t) =>
+        {
+            t.HasCheckConstraint("CK_Product_Cost_Positive", "[Cost] > 0");
+            t.HasCheckConstraint("CK_Order_CreatedAt", "[CreatedAt] < GETUTCDATE()");
+            t.HasCheckConstraint("CK_Order_CompletedAt",
+                "[CompletedAt] < GETUTCDATE() AND [CompletedAt] > [CreatedAt]");
+        });
+        
+        builder.Property(o => o.Cost).IsRequired();
+        
+        builder.Property(x => x.CreatedAt).IsRequired();
+        
+        builder.Property(o => o.CompletedAt).IsRequired(false);
+        
         builder.Property(x => x.IsCompleted).IsRequired();
-
+    
         builder.HasOne(o => o.ServicedBy).WithMany(e => e.Orders).HasForeignKey(o => o.EmployeeId);
         
-        builder.HasOne(o => o.OrderedBy).WithMany(c => c.Orders).HasForeignKey(o => o.CustomerId);
+        builder.HasOne(o => o.OrderedBy).WithMany(t => t.Orders).HasForeignKey(o => o.TableId);
         
-        builder.HasOne(o => o.Payment).WithOne(p => p.Order).HasForeignKey<Order>(o => o.PaymentId);
+        builder.HasOne(o => o.Payment).WithOne(p => p.Order).HasForeignKey<Order>(o => o.PaymentId).IsRequired(false);
     }
 }

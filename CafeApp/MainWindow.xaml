@@ -4,37 +4,27 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="1000">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="1.5*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height=".1*" />
-            <RowDefinition Height=".1*" />
             <RowDefinition />
         </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-            <TextBlock Text="Customer:" VerticalAlignment="Center"></TextBlock>
-            <ComboBox Height="25" Width="150" Margin="49, 0, 0, 0" 
-                      ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
-                      DisplayMemberPath="Name">
-            </ComboBox>
-        </StackPanel>
         
-        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
             <TextBlock Text="Product category:" VerticalAlignment="Center"></TextBlock>
-            <ComboBox Height="25" Width="150" Margin="10, 0, 0, 0"
+            <ComboBox Height="25" Width="170" Margin="10, 0, 0, 0"
                       ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
                       DisplayMemberPath="Name">
             </ComboBox>
         </StackPanel>
 
-        <GroupBox Grid.Row="2" Grid.Column="0" Header="Products">
+        <GroupBox Grid.Row="1" Grid.Column="0" Header="Products">
             <DataGrid ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}"
                       AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
                       HeadersVisibility="Column" SelectionMode="Single">
@@ -83,20 +73,29 @@
             </Button>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Select table:" VerticalAlignment="Center"></TextBlock>
-            <ComboBox Grid.Row="3" Grid.Column="1" Margin="5, 5, 0, 5" ItemsSource="{Binding VacantTables}"
-                      SelectedItem="{Binding SelectedVacantTable, Mode=TwoWay}"></ComboBox>
+            <ComboBox Grid.Row="3" Grid.Column="1" Margin="5, 5, 0, 5" ItemsSource="{Binding Tables}"
+                      SelectedItem="{Binding SelectedTable, Mode=TwoWay}" DisplayMemberPath="Number"></ComboBox>
 
-            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="To Order List" Height="25"></Button>
+            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="To Order List" Height="25" Command="{Binding ToOrderListCommand}"></Button>
 
             <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Horizontal">
                 <TextBlock Text="Total price:" VerticalAlignment="Center"></TextBlock>
-                <TextBlock Text="" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
+                <TextBlock Text="{Binding TotalPrice}" VerticalAlignment="Center" Margin="10, 0, 0, 0" FontWeight="Bold"></TextBlock>
             </StackPanel>
             
-            <Button Grid.Row="5" Grid.Column="1" Content="Make Order" Height="25"></Button>
+            <Button Grid.Row="5" Grid.Column="1" Content="Make Order" Height="25" Command="{Binding CreateOrderCommand}"></Button>
             
             <GroupBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Header="Ordered products">
-                <DataGrid></DataGrid>
+                <DataGrid ItemsSource="{Binding OrderItems}" SelectedItem="{Binding SelectedOrderItem}"
+                          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          HeadersVisibility="Column" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Order Item" Binding="{Binding Product.Name}" Width="1*" />
+                        <DataGridTextColumn Header="Price per unit" Binding="{Binding Product.Price}" Width="1*" />
+                        <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width=".6*" />
+  
+                    </DataGrid.Columns>
+                </DataGrid>
             </GroupBox>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Grid.ColumnSpan="2">
@@ -106,15 +105,37 @@
                 <RowDefinition Height=".5*" />
             </Grid.RowDefinitions>
             <GroupBox Grid.Row="0" Header="In Progress">
-                <DataGrid></DataGrid>
+                <DataGrid ItemsSource="{Binding UncompletedOrders}" SelectedItem="{Binding SelectedUncompletedOrder}"
+                          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          HeadersVisibility="Column" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Created at" Binding="{Binding CreatedAt}" Width=".1*" />
+                        <DataGridTextColumn Header="Employee" Binding="{Binding ServicedBy.Name}" Width=".1*" />
+                        <DataGridTextColumn Header="Customer" Binding="{Binding OrderedBy.Name}" Width=".1*" />
+                        <DataGridTextColumn Header="Table" Binding="{Binding OrderedBy.Table.Number}" Width=".04*" />
+                        <DataGridTextColumn Header="Cost" Binding="{Binding Cost}" Width=".05*" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </GroupBox>
             <GroupBox Grid.Row="2" Header="Completed">
-                <DataGrid></DataGrid>
+                <DataGrid ItemsSource="{Binding CompletedOrders}" SelectedItem="{Binding SelectedCompletedOrder}"
+                          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          HeadersVisibility="Column" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Created at" Binding="{Binding CreatedAt}" Width=".1*" />
+                        <DataGridTextColumn Header="Completed at" Binding="{Binding CompletedAt}" Width=".1*" />
+                        <DataGridTextColumn Header="Employee" Binding="{Binding ServicedBy.Name}" Width=".1*" />
+                        <DataGridTextColumn Header="Customer" Binding="{Binding OrderedBy.Name}" Width=".1*" />
+                        <DataGridTextColumn Header="Payment way" Binding="{Binding Payment.PaymentMethod}" Width=".1*" />
+                        <DataGridTextColumn Header="Cost" Binding="{Binding Cost}" Width=".05*" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </GroupBox>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,0,0,5">
                 <TextBlock Text="Payment:" VerticalAlignment="Center"></TextBlock>
-                <ListBox Width="100" Height="25" Margin="10,0,10,0"></ListBox>
-                <Button Width="80" Height="25" Content="Complete"></Button>
+                <ComboBox Width="150" Height="25" Margin="20,0,40,0" ItemsSource="{Binding PaymentMethods}"
+                          SelectedItem="{Binding SelectedPaymentMethod, Mode=TwoWay}"></ComboBox>
+                <Button Width="80" Height="25" Content="Complete" MinWidth="150" Command="{Binding CompleteOrderCommand}"></Button>
             </StackPanel>
         </Grid>
     </Grid>

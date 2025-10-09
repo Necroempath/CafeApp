@@ -7,5 +7,4 @@ public class Customer
     public int? TableId { get; set; }
     
     public Table? Table { get; set; }
-    public ICollection<Order> Orders { get; set; }
 }
