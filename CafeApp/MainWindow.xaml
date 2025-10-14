@@ -111,7 +111,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Created at" Binding="{Binding CreatedAt}" Width=".1*" />
                         <DataGridTextColumn Header="Employee" Binding="{Binding ServicedBy.Name}" Width=".1*" />
-                        <DataGridTextColumn Header="Customer" Binding="{Binding OrderedBy.CustomerName}" Width=".1*" />
+                        <DataGridTextColumn Header="Customer" Binding="{Binding OrderedBy.Customer.Name}" Width=".1*" />
                         <DataGridTextColumn Header="Table" Binding="{Binding OrderedBy.Number}" Width=".04*" />
                         <DataGridTextColumn Header="Cost" Binding="{Binding Cost}" Width=".05*" />
                     </DataGrid.Columns>

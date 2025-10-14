@@ -4,6 +4,7 @@ using CafeApp.Commands;
 using CafeApp.Data;
 using CafeApp.Models;
 using CafeApp.ViewModels.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
 namespace CafeApp.ViewModels;
 
@@ -203,9 +204,10 @@ public class MainViewModel : BaseViewModel
         SelectedUncompletedOrder!.IsCompleted = true;
         SelectedUncompletedOrder.CompletedAt = DateTime.Now;
         SelectedUncompletedOrder.Payment = new Payment { PaymentMethod = SelectedPaymentMethod };
-        
+        _dbContext.Entry(SelectedUncompletedOrder).State = EntityState.Detached;
         CompletedOrders.Add(SelectedUncompletedOrder);
-        UncompletedOrders.Remove(SelectedUncompletedOrder!);
+        if (UncompletedOrders.Contains(SelectedUncompletedOrder))
+            UncompletedOrders.Remove(SelectedUncompletedOrder);
 
         return CompletedOrders.Last();
     }
