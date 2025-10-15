@@ -109,11 +109,11 @@
                           AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
                           HeadersVisibility="Column" SelectionMode="Single">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Created at" Binding="{Binding CreatedAt}" Width=".1*" />
-                        <DataGridTextColumn Header="Employee" Binding="{Binding ServicedBy.Name}" Width=".1*" />
-                        <DataGridTextColumn Header="Customer" Binding="{Binding OrderedBy.Customer.Name}" Width=".1*" />
-                        <DataGridTextColumn Header="Table" Binding="{Binding OrderedBy.Number}" Width=".04*" />
-                        <DataGridTextColumn Header="Cost" Binding="{Binding Cost}" Width=".05*" />
+                        <DataGridTextColumn Header="Created at" Binding="{Binding Order.CreatedAt}" Width=".1*" />
+                        <DataGridTextColumn Header="Employee" Binding="{Binding Order.ServicedBy.Name}" Width=".1*" />
+                        <DataGridTextColumn Header="Customer" Binding="{Binding Order.OrderedBy.Name}" Width=".1*" />
+                        <DataGridTextColumn Header="Table" Binding="{Binding Order.OrderedBy.Table.Number}" Width=".04*" />
+                        <DataGridTextColumn Header="Cost" Binding="{Binding TotalPrice}" Width=".05*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </GroupBox>
@@ -122,12 +122,12 @@
                           AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
                           HeadersVisibility="Column" SelectionMode="Single">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Created at" Binding="{Binding CreatedAt}" Width=".1*" />
-                        <DataGridTextColumn Header="Completed at" Binding="{Binding CompletedAt}" Width=".1*" />
-                        <DataGridTextColumn Header="Employee" Binding="{Binding ServicedBy.Name}" Width=".1*" />
-                        <DataGridTextColumn Header="Customer" Binding="{Binding OrderedBy.Name}" Width=".1*" />
-                        <DataGridTextColumn Header="Payment way" Binding="{Binding Payment.PaymentMethod}" Width=".1*" />
-                        <DataGridTextColumn Header="Cost" Binding="{Binding Cost}" Width=".05*" />
+                        <DataGridTextColumn Header="Created at" Binding="{Binding Order.CreatedAt}" Width=".1*" />
+                        <DataGridTextColumn Header="Completed at" Binding="{Binding Order.CompletedAt}" Width=".1*" />
+                        <DataGridTextColumn Header="Employee" Binding="{Binding Order.ServicedBy.Name}" Width=".1*" />
+                        <DataGridTextColumn Header="Customer" Binding="{Binding Order.OrderedBy.Name}" Width=".1*" />
+                        <DataGridTextColumn Header="Payment way" Binding="{Binding Order.Payment.PaymentMethod}" Width=".1*" />
+                        <DataGridTextColumn Header="Cost" Binding="{Binding TotalPrice}" Width=".05*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </GroupBox>

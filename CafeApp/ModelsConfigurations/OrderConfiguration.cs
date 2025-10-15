@@ -12,14 +12,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         
         builder.ToTable((t) =>
         {
-            t.HasCheckConstraint("CK_Product_Cost_Positive", "[Cost] > 0");
             t.HasCheckConstraint("CK_Order_CreatedAt", "[CreatedAt] < GETUTCDATE()");
             t.HasCheckConstraint("CK_Order_CompletedAt",
                 "[CompletedAt] < GETUTCDATE() AND [CompletedAt] > [CreatedAt]");
         });
-        
-        builder.Property(o => o.Cost).IsRequired();
-        
+
         builder.Property(x => x.CreatedAt).IsRequired();
         
         builder.Property(o => o.CompletedAt).IsRequired(false);
@@ -28,7 +25,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
     
         builder.HasOne(o => o.ServicedBy).WithMany(e => e.Orders).HasForeignKey(o => o.EmployeeId);
         
-        builder.HasOne(o => o.OrderedBy).WithMany(t => t.Orders).HasForeignKey(o => o.TableId);
+        builder.HasOne(o => o.OrderedBy).WithMany(t => t.Orders).HasForeignKey(o => o.CustomerId);
         
         builder.HasOne(o => o.Payment).WithOne(p => p.Order).HasForeignKey<Order>(o => o.PaymentId).IsRequired(false);
     }

@@ -16,14 +16,11 @@ public class MainViewModel : BaseViewModel
     private int _productAmount;
     private decimal _totalPrice;
     private Table _selectedTable;
-    private Order? _selectedUncompletedOrder;
-    private Order? _selectedCompletedOrder;
+    private OrderView? _selectedUncompletedOrder;
+    private OrderView? _selectedCompletedOrder;
     private OrderItem? _selectedOrderItem;
     private List<Employee> _employees = new();
-    private List<Customer> _customers = new();
-    
     public ObservableCollection<Category> Categories { get; set; } = new();
-
     public Category? SelectedCategory
     {
         get => _selectedCategory;
@@ -33,7 +30,6 @@ public class MainViewModel : BaseViewModel
             LoadProducts(value.Id);
         }
     }
-
     public ObservableCollection<Product> Products { get; set; } = new();
     public Product? SelectedProduct
     {
@@ -66,14 +62,14 @@ public class MainViewModel : BaseViewModel
         get => _selectedOrderItem;
         set => SetField(ref _selectedOrderItem, value);
     }
-    public ObservableCollection<Order> UncompletedOrders { get; set; } = new();
-    public ObservableCollection<Order> CompletedOrders { get; set; } = new();
-    public Order? SelectedUncompletedOrder
+    public ObservableCollection<OrderView> UncompletedOrders { get; set; } = new();
+    public ObservableCollection<OrderView> CompletedOrders { get; set; } = new();
+    public OrderView? SelectedUncompletedOrder
     {
         get => _selectedUncompletedOrder;
         set => SetField(ref _selectedUncompletedOrder, value);
     }
-    public Order? SelectedCompletedOrder { 
+    public OrderView? SelectedCompletedOrder { 
         get => _selectedCompletedOrder;
         set => SetField(ref _selectedCompletedOrder, value);
     }
@@ -94,10 +90,9 @@ public class MainViewModel : BaseViewModel
         IncrementAmountCommand = new RelayCommand(_ => ProductAmount++, _ => SelectedProduct != null );
         DecrementAmountCommand = new RelayCommand(_ => ProductAmount--, _ => SelectedProduct != null && ProductAmount > 1 );
         ToOrderListCommand = new RelayCommand(_ => OrderItems.Add(new(){ Quantity = ProductAmount, Product = SelectedProduct! }),  _ => SelectedProduct != null);
-        CreateOrderCommand = new RelayCommand(_ => UncompletedOrders.Add(CreateOrder()), _ => OrderItems.Count > 0);
+        CreateOrderCommand = new RelayCommand(_ => UncompletedOrders.Add(CreateOrderView()), _ => OrderItems.Count > 0);
         CompleteOrderCommand = new RelayCommand(_ => CompleteOrder(), _ => SelectedUncompletedOrder != null);
-        
-        LoadCustomers();
+ 
         LoadCategories();
         LoadTables();
         LoadEmployees();
@@ -109,28 +104,17 @@ public class MainViewModel : BaseViewModel
         {
             OnPropertyChanged(nameof(TotalPrice));
         };
-
-        UncompletedOrders.CollectionChanged += (s, e) =>
-        {
-            _dbContext.Tables.Update(SelectedTable);
-            _dbContext.Customers.Update(SelectedTable.Customer!);
-            _dbContext.SaveChanges();
-            LoadTables();
-            SelectedTable = Tables[0];
-        };
+        //
+        // UncompletedOrders.CollectionChanged += (s, e) =>
+        // {
+        //     _dbContext.Tables.Update(SelectedTable);
+        //     _dbContext.Customers.Update(SelectedTable.Customer!);
+        //     _dbContext.SaveChanges();
+        //     LoadTables();
+        //     SelectedTable = Tables[0];
+        // };
     }
     
-    private void LoadCustomers()
-    {
-        var customers = _dbContext.Customers.ToList();
-        
-        _customers.Clear();
-
-        foreach (var customer in customers)
-        {
-            _customers.Add(customer);
-        }
-    }
     private void LoadCategories()
     {
         var categories = _dbContext.Categories.ToList();
@@ -168,15 +152,15 @@ public class MainViewModel : BaseViewModel
     private void LoadEmployees()
     {
         var employees = _dbContext.Employees.ToList();
-        
-        _employees.Clear();
 
+        _employees.Clear();
+        
         foreach (var employee in employees)
         {
             _employees.Add(employee);
         }
     }
-    private Order CreateOrder()
+    private OrderView CreateOrderView()
     {
         var order = new Order();
         
@@ -189,25 +173,33 @@ public class MainViewModel : BaseViewModel
         
         order.CreatedAt = DateTime.Now;
         order.IsCompleted = false;
-        order.OrderedBy = SelectedTable;
-        order.OrderedBy.Customer = _customers.First(c => c.Table == null);
-        
+        order.OrderedBy = _dbContext.Customers.First(c => c.Table == null);
+        order.OrderedBy.Table = SelectedTable;
+        SelectedTable.Customer = order.OrderedBy;
+        order.OrderedBy.Table = SelectedTable;
+        _dbContext.Tables.Update(SelectedTable);
+        _dbContext.Customers.Update(order.OrderedBy);
+        _dbContext.SaveChanges();
+        Tables.Remove(SelectedTable);
+        SelectedTable = Tables[0];
         order.ServicedBy = _employees[new Random().Next(0, _employees.Count)];
-        order.Cost = TotalPrice;
+     
         
         OrderItems.Clear();
         
-        return order;
+        return new(order);
     }
-    private Order CompleteOrder()
+    private OrderView CompleteOrder()
     {
-        SelectedUncompletedOrder!.IsCompleted = true;
-        SelectedUncompletedOrder.CompletedAt = DateTime.Now;
-        SelectedUncompletedOrder.Payment = new Payment { PaymentMethod = SelectedPaymentMethod };
-        _dbContext.Entry(SelectedUncompletedOrder).State = EntityState.Detached;
+        SelectedUncompletedOrder!.Order.IsCompleted = true;
+        SelectedUncompletedOrder.Order.OrderedBy.Table!.Customer = null;
+        SelectedUncompletedOrder.Order.OrderedBy.Table = null;
+        
+        SelectedUncompletedOrder.Order.CompletedAt = DateTime.Now;
+        SelectedUncompletedOrder.Order.Payment = new Payment { PaymentMethod = SelectedPaymentMethod };
+        
         CompletedOrders.Add(SelectedUncompletedOrder);
-        if (UncompletedOrders.Contains(SelectedUncompletedOrder))
-            UncompletedOrders.Remove(SelectedUncompletedOrder);
+        UncompletedOrders.Remove(SelectedUncompletedOrder);
 
         return CompletedOrders.Last();
     }
